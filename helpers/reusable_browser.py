@@ -12,7 +12,6 @@ def create_driver_session():
     driver = webdriver.Chrome(
         options=chrome_options,
         desired_capabilities=caps,
-        executable_path=get_config('driver_path')
     )
     driver.maximize_window()
     set_config('session', 'session_id', driver.session_id)
@@ -20,15 +19,19 @@ def create_driver_session():
     time.sleep(60000)
 
 
+# I sincerely thank to Tarun Lalwani for this code
+# https://tarunlalwani.com/post/reusing-existing-browser-session-selenium/
+
 def resume_driver_session():
     session_id = get_config('session', 'session_id')
-    ce_url = get_config('session', 'ce_url'),
+    ce_url = get_config('session', 'ce_url')
+
     from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
-    # Save the original function so we can revert our patch
+    # Save the original function, so we can revert our patch
     org_command_execute = RemoteWebDriver.execute
 
     def new_command_execute(self, command, params=None):
-        if command == 'newSession':
+        if command == "newSession":
             # Mock the response
             return {'success': 0, 'value': None, 'sessionId': session_id}
         else:
@@ -36,9 +39,11 @@ def resume_driver_session():
 
     # Patch the function before creating the driver object
     RemoteWebDriver.execute = new_command_execute
-    # Create the driver
+
     new_driver = webdriver.Remote(command_executor=ce_url, desired_capabilities={})
     new_driver.session_id = session_id
+
     # Replace the patched function with original function
     RemoteWebDriver.execute = org_command_execute
+
     return new_driver
