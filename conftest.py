@@ -10,5 +10,7 @@ def driver(request):
         driver = resume_driver_session()
     else:
         driver = webdriver.Chrome()
+    driver.maximize_window()
+    driver.implicitly_wait(10)
     request.cls.driver = driver
     yield driver

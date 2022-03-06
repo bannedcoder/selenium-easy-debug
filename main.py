@@ -1,5 +1,9 @@
+import time
+
 from helpers.reusable_browser import *
 import pytest
+from selenium.webdriver.common.keys import Keys
+from cred import cred
 
 
 @pytest.mark.usefixtures('driver')
@@ -13,7 +17,16 @@ class TestBrowserNavigation:
         self.driver.find_element_by_xpath("//a[contains(@class, 'login-link')]").click()
 
     def test_input_email(self):
-        self.driver.find_element_by_id("email").send_keys("username")
+        self.driver.find_element_by_id("email").send_keys(cred['username'])
 
     def test_input_password(self):
-        self.driver.find_element_by_id("password").send_keys("username")
+        self.driver.find_element_by_id("password").send_keys(cred['password'])
+
+    def test_click_on_login(self):
+        self.driver.find_element_by_xpath("//button[contains(@id, 'submit-button')]").click()
+        time.sleep(3)
+
+    def test_search_for_python(self):
+        self.driver.find_element_by_name("q").click()
+        self.driver.find_element_by_name("q").send_keys("python")
+        self.driver.find_element_by_name("q").send_keys(Keys.ENTER)
