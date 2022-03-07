@@ -1,9 +1,7 @@
-import time
-
 from helpers.reusable_browser import *
 import pytest
 from selenium.webdriver.common.keys import Keys
-from cred import cred
+from venv.cred import cred
 
 
 @pytest.mark.usefixtures('driver')
